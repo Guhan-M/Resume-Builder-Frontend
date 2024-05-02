@@ -1,9 +1,14 @@
+# Build settings
 [build]
-command= "npm run build"
-publish ="/build"
-base="/"
+  base = "/opt/build/repo"
+  command = "npm run build"
+  commandOrigin = "config"
+  publish = "/opt/build/repo/build"
+  publishOrigin = "config"
+  environment = ["CHROMIUM_PATH"]
 
+# Redirects
 [[redirects]]
-from="/*"
-to="/index.html"
-status=200
+  from = "/*"
+  status = 200
+  to = "/index.html"
