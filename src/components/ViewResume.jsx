@@ -126,7 +126,7 @@ const generatePDF = async (elementId, e, i) => {
       });
       if (generatePDFResponse.status === 201) {
         // Handle success
-        let data =generatePDFResponse.data?.sendfilename
+        let data =generatePDFResponse.data?.base64Pdf
         console.log(generatePDFResponse.data)
         console.log("PDF generated successfully");
         const downloadUrl = ` ${API_URL}/pdf/${data}`;
