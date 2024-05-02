@@ -1,10 +1,10 @@
 
 # Build settings
 [build]
-  base = "/opt/build/repo"
+  base = "/opt/build/repo"  # Specify the correct base directory path
   command = "npm run build"
   commandOrigin = "config"
-  publish = "build"  # Update to match the directory where build artifacts are generated
+  publish = "build"
   publishOrigin = "config"
 
 # Redirects
@@ -12,6 +12,7 @@
   from = "/*"
   status = 200
   to = "/index.html"
+
 
 
 
