@@ -1,11 +1,4 @@
-# Global settings
-[build]
-  command = "npm run build"  # Command to build your project
-  publish = "public"         # Directory to publish after build
-  functions = "functions"    # Directory for serverless functions
-
-# Redirects
 [[redirects]]
-  from = "/*"                # Match all paths
-  to = "/dashboard"         # Redirect to index.html
-  status = 200               # Status code for the redirect
+from = "/*"
+to = "/index.html"
+status = 200
