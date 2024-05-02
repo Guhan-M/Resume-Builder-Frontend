@@ -7,5 +7,5 @@
 # Redirects
 [[redirects]]
   from = "/*"                # Match all paths
-  to = "/index.html"         # Redirect to index.html
+  to = "/dashboard"         # Redirect to index.html
   status = 200               # Status code for the redirect
