@@ -110,38 +110,33 @@ const generatePDF = async (elementId, e, i) => {
     console.log(elementId, e);
     try {
         navigate(`/ResumetoPdf/${e._id}`);
-        setTimeout(() => {
             handleGeneratePDF(e._id);
             console.log('Current data set successfully.');
-        }, 5000); // Adjust the delay time (in milliseconds) as needed
         // navigate(`/profile/${id}/viewresumedata`)
     } catch (error) {
         console.error('Error setting current data:', error);
     }
   };
   async function handleGeneratePDF(id) {
-    try {
-      const generatePDFResponse = await AxiosService.post(ApiRoutes.GENERATEPDF.path, JSON.stringify({id:id}), {
-        authenticate: ApiRoutes.GENERATEPDF.authenticate
-      });
-      if (generatePDFResponse.status === 201) {
-        // Handle success
-        let data =generatePDFResponse.data?.base64Pdf
-        console.log(generatePDFResponse.data)
-        console.log("PDF generated successfully");
-        const downloadUrl = ` ${API_URL}/pdf/${data}`;
-        window.open(downloadUrl, '_blank');
-      } else {
-        // Handle failure
-        console.error("Failed to generate PDF.");
+      try {
+        const generatePDFResponse = await AxiosService.post(ApiRoutes.GENERATEPDF.path, JSON.stringify({id:id}), {
+                authenticate: ApiRoutes.GENERATEPDF.authenticate
+              });
+          if (generatePDFResponse.status === 201) {
+              // Convert base64 PDF to a downloadable PDF file
+              const base64Pdf = generatePDFResponse.data.base64Pdf;
+              base64ToPdf(base64Pdf, 'generated_pdf.pdf');
+              console.log("PDF generated successfully", base64Pdf);
+          } else {
+              // Handle failure
+              console.error("Failed to generate PDF.");
+          }
+      } catch (error) {
+          // Handle error
+          console.error('Error generating PDF:', error);
       }
-    } catch (error) {
-      // Handle error
-      console.error('Error generating PDF:', error);
-    }
   }
-
-  function base64ToPdf(base64String, outputFileName) {
+function base64ToPdf(base64String, outputFileName) {
     // Decode base64 string
     const binaryPdf = atob(base64String);
 
@@ -168,8 +163,6 @@ const generatePDF = async (elementId, e, i) => {
     document.body.removeChild(link);
     URL.revokeObjectURL(link.href);
 }
-
-
  
   
 
