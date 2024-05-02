@@ -1,11 +1,8 @@
 # Build settings
 [build]
-  base = "/opt/build/repo"
+  base = "/"
   command = "npm run build"
-  commandOrigin = "config"
-  publish = "/opt/build/repo/build"
-  publishOrigin = "config"
-  environment = ["CHROMIUM_PATH"]
+  publish = "/build"
 
 # Redirects
 [[redirects]]
