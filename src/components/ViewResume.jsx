@@ -105,7 +105,7 @@ function ViewResume() {
     }
   };
 
-  const generatePDF = async (elementId, e, i) => {
+const generatePDF = async (elementId, e, i) => {
     console.log(elementId,e)
      try {
        navigate(`/ResumetoPdf/${e._id}`);
@@ -113,7 +113,7 @@ function ViewResume() {
        // users.setCurrentData({ elementId, e, i });
        handleGeneratePDF(e._id);
        console.log('Current data set successfully.');
-       navigate(`/profile/${id}/viewresumedata`)
+       // navigate(`/profile/${id}/viewresumedata`)
      } catch (error) {
        console.error('Error setting current data:', error);
      }
@@ -130,7 +130,7 @@ function ViewResume() {
                const base64Pdf = generatePDFResponse.data.base64Pdf;
                base64ToPdf(base64Pdf, 'generated_pdf.pdf');
                toast("PDF generating.....")
-              // navigate(`/profile/${id}`)
+                 navigate(`/profile/${id}`)
                console.log("PDF generated successfully", base64Pdf);
            } else {
                // Handle failure
@@ -168,8 +168,9 @@ function ViewResume() {
      document.body.removeChild(link);
      URL.revokeObjectURL(link.href);
 
- } 
-// const generatePDF = async (elementId, e, i) => {
+ }
+  
+  // const generatePDF = async (elementId, e, i) => {
 //     console.log(elementId, e);
 //     try {
 //         navigate(`/ResumetoPdf/${e._id}`);
