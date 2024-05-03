@@ -129,7 +129,7 @@ function ViewResume() {
                // Convert base64 PDF to a downloadable PDF file
                const base64Pdf = generatePDFResponse.data.base64Pdf;
                base64ToPdf(base64Pdf, 'generated_pdf.pdf');
-               toast("PDF generating.....")
+               toast("PDF Download successfully !! ")
               navigate(`/profile/${id}`)
                console.log("PDF generated successfully", base64Pdf);
            } else {
