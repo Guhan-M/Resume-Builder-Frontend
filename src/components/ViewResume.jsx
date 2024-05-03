@@ -113,7 +113,7 @@ function ViewResume() {
        // users.setCurrentData({ elementId, e, i });
        handleGeneratePDF(e._id);
        console.log('Current data set successfully.');
-       // navigate(`/profile/${id}/viewresumedata`)
+       navigate(`/profile/${id}/viewresumedata`)
      } catch (error) {
        console.error('Error setting current data:', error);
      }
@@ -129,8 +129,8 @@ function ViewResume() {
                // Convert base64 PDF to a downloadable PDF file
                const base64Pdf = generatePDFResponse.data.base64Pdf;
                base64ToPdf(base64Pdf, 'generated_pdf.pdf');
-               toast("PDF Download successfully !! ")
-              navigate(`/profile/${id}`)
+               toast("PDF generating.....")
+              // navigate(`/profile/${id}`)
                console.log("PDF generated successfully", base64Pdf);
            } else {
                // Handle failure
@@ -168,8 +168,7 @@ function ViewResume() {
      document.body.removeChild(link);
      URL.revokeObjectURL(link.href);
 
- }
- 
+ } 
 // const generatePDF = async (elementId, e, i) => {
 //     console.log(elementId, e);
 //     try {
