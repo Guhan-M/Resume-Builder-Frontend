@@ -105,88 +105,132 @@ function ViewResume() {
     }
   };
 
+  const generatePDF = async (elementId, e, i) => {
+    console.log(elementId,e)
+     try {
+       navigate(`/ResumetoPdf/${e._id}`);
+       toast("Give some time to generate PDF")
+       // users.setCurrentData({ elementId, e, i });
+       handleGeneratePDF(e._id);
+       console.log('Current data set successfully.');
+       // navigate(`/profile/${id}/viewresumedata`)
+     } catch (error) {
+       console.error('Error setting current data:', error);
+     }
+   };
+ 
+   
+   async function handleGeneratePDF(id) {
+       try {
+         const generatePDFResponse = await AxiosService.post(ApiRoutes.GENERATEPDF.path, JSON.stringify({id:id}), {
+                 authenticate: ApiRoutes.GENERATEPDF.authenticate
+               });
+           if (generatePDFResponse.status === 201) {
+               // Convert base64 PDF to a downloadable PDF file
+               const base64Pdf = generatePDFResponse.data.base64Pdf;
+               base64ToPdf(base64Pdf, 'generated_pdf.pdf');
+               toast("PDF generating.....")
+              navigate(`/profile/${id}`)
+               console.log("PDF generated successfully", base64Pdf);
+           } else {
+               // Handle failure
+               console.error("Failed to generate PDF.");
+           }
+       } catch (error) {
+           // Handle error
+           console.error('Error generating PDF:', error);
+       }
+   }
+ function base64ToPdf(base64String, outputFileName) {
+     // Decode base64 string
+     const binaryPdf = atob(base64String);
+ 
+     // Convert binary string to ArrayBuffer
+     const pdfBuffer = new ArrayBuffer(binaryPdf.length);
+     const pdfArray = new Uint8Array(pdfBuffer);
+     for (let i = 0; i < binaryPdf.length; i++) {
+         pdfArray[i] = binaryPdf.charCodeAt(i);
+     }
+ 
+     // Create a Blob from the ArrayBuffer
+     const pdfBlob = new Blob([pdfArray], { type: 'application/pdf' });
+ 
+     // Create a temporary link element
+     const link = document.createElement('a');
+     link.href = URL.createObjectURL(pdfBlob);
+     link.download = outputFileName;
+ 
+     // Append the link to the document body and trigger a click event
+     document.body.appendChild(link);
+     link.click();
+ 
+     // Clean up
+     document.body.removeChild(link);
+     URL.revokeObjectURL(link.href);
 
-const generatePDF = async (elementId, e, i) => {
-    console.log(elementId, e);
-    try {
-        navigate(`/ResumetoPdf/${e._id}`);
-            handleGeneratePDF(e._id);
-            console.log('Current data set successfully.');
-        // navigate(`/profile/${id}/viewresumedata`)
-    } catch (error) {
-        console.error('Error setting current data:', error);
-    }
-  };
-  async function handleGeneratePDF(id) {
-      try {
-        const generatePDFResponse = await AxiosService.post(ApiRoutes.GENERATEPDF.path, JSON.stringify({id:id}), {
-                authenticate: ApiRoutes.GENERATEPDF.authenticate
-              });
-          if (generatePDFResponse.status === 201) {
-              // Convert base64 PDF to a downloadable PDF file
-              const base64Pdf = generatePDFResponse.data.base64Pdf;
-              base64ToPdf(base64Pdf, 'generated_pdf.pdf');
-              console.log("PDF generated successfully", base64Pdf);
-          } else {
-              // Handle failure
-              console.error("Failed to generate PDF.");
-          }
-      } catch (error) {
-          // Handle error
-          console.error('Error generating PDF:', error);
-      }
-  }
-function base64ToPdf(base64String, outputFileName) {
-    // Decode base64 string
-    const binaryPdf = atob(base64String);
+ }
+ 
+// const generatePDF = async (elementId, e, i) => {
+//     console.log(elementId, e);
+//     try {
+//         navigate(`/ResumetoPdf/${e._id}`);
+//             handleGeneratePDF(e._id);
+//             console.log('Current data set successfully.');
+//         // navigate(`/profile/${id}/viewresumedata`)
+//     } catch (error) {
+//         console.error('Error setting current data:', error);
+//     }
+//   };
+//   async function handleGeneratePDF(id) {
+//       try {
+//         const generatePDFResponse = await AxiosService.post(ApiRoutes.GENERATEPDF.path, JSON.stringify({id:id}), {
+//                 authenticate: ApiRoutes.GENERATEPDF.authenticate
+//               });
+//           if (generatePDFResponse.status === 201) {
+//               // Convert base64 PDF to a downloadable PDF file
+//               const base64Pdf = generatePDFResponse.data.base64Pdf;
+//               base64ToPdf(base64Pdf, 'generated_pdf.pdf');
+//               console.log("PDF generated successfully", base64Pdf);
+//           } else {
+//               // Handle failure
+//               console.error("Failed to generate PDF.");
+//           }
+//       } catch (error) {
+//           // Handle error
+//           console.error('Error generating PDF:', error);
+//       }
+//   }
+// function base64ToPdf(base64String, outputFileName) {
+//     // Decode base64 string
+//     const binaryPdf = atob(base64String);
 
-    // Convert binary string to ArrayBuffer
-    const pdfBuffer = new ArrayBuffer(binaryPdf.length);
-    const pdfArray = new Uint8Array(pdfBuffer);
-    for (let i = 0; i < binaryPdf.length; i++) {
-        pdfArray[i] = binaryPdf.charCodeAt(i);
-    }
+//     // Convert binary string to ArrayBuffer
+//     const pdfBuffer = new ArrayBuffer(binaryPdf.length);
+//     const pdfArray = new Uint8Array(pdfBuffer);
+//     for (let i = 0; i < binaryPdf.length; i++) {
+//         pdfArray[i] = binaryPdf.charCodeAt(i);
+//     }
 
-    // Create a Blob from the ArrayBuffer
-    const pdfBlob = new Blob([pdfArray], { type: 'application/pdf' });
+//     // Create a Blob from the ArrayBuffer
+//     const pdfBlob = new Blob([pdfArray], { type: 'application/pdf' });
 
-    // Create a temporary link element
-    const link = document.createElement('a');
-    link.href = URL.createObjectURL(pdfBlob);
-    link.download = outputFileName;
+//     // Create a temporary link element
+//     const link = document.createElement('a');
+//     link.href = URL.createObjectURL(pdfBlob);
+//     link.download = outputFileName;
 
-    // Append the link to the document body and trigger a click event
-    document.body.appendChild(link);
-    link.click();
+//     // Append the link to the document body and trigger a click event
+//     document.body.appendChild(link);
+//     link.click();
 
-    // Clean up
-    document.body.removeChild(link);
-    URL.revokeObjectURL(link.href);
-}
+//     // Clean up
+//     document.body.removeChild(link);
+//     URL.revokeObjectURL(link.href);
+// }
  
   
 
-  // async function handleGeneratePDF(id) {
-  //   try {
-  //     const generatePDFResponse = await AxiosService.post(ApiRoutes.GENERATEPDF.path, JSON.stringify({id:id}), {
-  //       authenticate: ApiRoutes.GENERATEPDF.authenticate
-  //     });
-  //     if (generatePDFResponse.status === 201) {
-  //       // Handle success
-  //       let data = await generatePDFResponse.data?.base64Pdf
-  //       console.log(generatePDFResponse.data,data)
-  //       console.log("PDF generated successfully");
-  //       // const downloadUrl = ` ${API_URL}/pdf/${data}`;
-  //       // window.open(downloadUrl, '_blank');
-  //     } else {
-  //       // Handle failure
-  //       console.error("Failed to generate PDF.");
-  //     }
-  //   } catch (error) {
-  //     // Handle error
-  //     console.error('Error generating PDF:', error);
-  //   }
-  // }
+ 
   console.log(data2)
   return (
     <>
