@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState,useContext } from 'react';
 import { useParams } from 'react-router-dom';
 import AxiosService from '../utils/AxiosService';
 import ApiRoutes from '../utils/ApiRoutes';
-import { Button } from 'react-bootstrap';
+import { Button,Spinner } from 'react-bootstrap';
 import toast from 'react-hot-toast';
 import { useNavigate } from 'react-router-dom';
 import { API_URL } from '../App';
@@ -15,9 +15,8 @@ import { FaGithub } from "react-icons/fa";
 import TopBar from '../components/TopBar';
 import {userContext} from '../utils/UserContext'
 import "./resume/formalresume3style.css"
-import axios from 'axios';
-import fs from 'fs';
-  
+
+
 function ViewResume() {
   let users = useContext(userContext)
   const pdfRef = useRef();
@@ -26,7 +25,7 @@ function ViewResume() {
   const [data, setData] = useState([]);
   const [data2, setData2] = useState([]);
   const [data3, setData3] = useState([]);
-
+  const [loading, setLoading] = useState(true); // Loading state
   // https://www.npmjs.com/package/puppeteer?activeTab=readme
   
   const getData = async () => {
@@ -46,18 +45,21 @@ function ViewResume() {
         const filteredresume1Data = resume1.data.users.filter(item => item.id === id);
         const filteredresume2data = resume2.data.users.filter(item => item.id === id);
         const filteredresume3data = resume3.data.users.filter(item => item.id === id);
-
+       
         if (filteredresume1Data && filteredresume2data && filteredresume3data) {
           setData2(filteredresume2data);
           setData(filteredresume1Data);
           setData3(filteredresume3data)
+          setLoading(false);
         } else {
           setData([]);
           setData2([]);
           setData3([]);
+          setLoading(false);
         }
       }
     } catch (error) {
+      setLoading(false);
       toast.error(error.response.data.message || error.message);
     }
   };
@@ -105,12 +107,11 @@ function ViewResume() {
     }
   };
 
-const generatePDF = async (elementId, e, i) => {
+  const generatePDF = async (elementId, e, i) => {
     console.log(elementId,e)
      try {
        navigate(`/ResumetoPdf/${e._id}`);
        toast("Give some time to generate PDF")
-       // users.setCurrentData({ elementId, e, i });
        handleGeneratePDF(e._id);
        console.log('Current data set successfully.');
        // navigate(`/profile/${id}/viewresumedata`)
@@ -129,8 +130,8 @@ const generatePDF = async (elementId, e, i) => {
                // Convert base64 PDF to a downloadable PDF file
                const base64Pdf = generatePDFResponse.data.base64Pdf;
                base64ToPdf(base64Pdf, 'generated_pdf.pdf');
-               toast("PDF generating.....")
-                 navigate(`/profile/${id}`)
+               toast("PDF Download Successfully !!")
+                 navigate(`/dashboard`)
                console.log("PDF generated successfully", base64Pdf);
            } else {
                // Handle failure
@@ -169,170 +170,117 @@ const generatePDF = async (elementId, e, i) => {
      URL.revokeObjectURL(link.href);
 
  }
-  
-  // const generatePDF = async (elementId, e, i) => {
-//     console.log(elementId, e);
-//     try {
-//         navigate(`/ResumetoPdf/${e._id}`);
-//             handleGeneratePDF(e._id);
-//             console.log('Current data set successfully.');
-//         // navigate(`/profile/${id}/viewresumedata`)
-//     } catch (error) {
-//         console.error('Error setting current data:', error);
-//     }
-//   };
-//   async function handleGeneratePDF(id) {
-//       try {
-//         const generatePDFResponse = await AxiosService.post(ApiRoutes.GENERATEPDF.path, JSON.stringify({id:id}), {
-//                 authenticate: ApiRoutes.GENERATEPDF.authenticate
-//               });
-//           if (generatePDFResponse.status === 201) {
-//               // Convert base64 PDF to a downloadable PDF file
-//               const base64Pdf = generatePDFResponse.data.base64Pdf;
-//               base64ToPdf(base64Pdf, 'generated_pdf.pdf');
-//               console.log("PDF generated successfully", base64Pdf);
-//           } else {
-//               // Handle failure
-//               console.error("Failed to generate PDF.");
-//           }
-//       } catch (error) {
-//           // Handle error
-//           console.error('Error generating PDF:', error);
-//       }
-//   }
-// function base64ToPdf(base64String, outputFileName) {
-//     // Decode base64 string
-//     const binaryPdf = atob(base64String);
-
-//     // Convert binary string to ArrayBuffer
-//     const pdfBuffer = new ArrayBuffer(binaryPdf.length);
-//     const pdfArray = new Uint8Array(pdfBuffer);
-//     for (let i = 0; i < binaryPdf.length; i++) {
-//         pdfArray[i] = binaryPdf.charCodeAt(i);
-//     }
-
-//     // Create a Blob from the ArrayBuffer
-//     const pdfBlob = new Blob([pdfArray], { type: 'application/pdf' });
-
-//     // Create a temporary link element
-//     const link = document.createElement('a');
-//     link.href = URL.createObjectURL(pdfBlob);
-//     link.download = outputFileName;
-
-//     // Append the link to the document body and trigger a click event
-//     document.body.appendChild(link);
-//     link.click();
-
-//     // Clean up
-//     document.body.removeChild(link);
-//     URL.revokeObjectURL(link.href);
-// }
  
-  
-
  
   console.log(data2)
-  return (
-    <>
+  return(
+  <>
       <TopBar />
-      {data.length > 0 || data2.length > 0 || data3.length > 0 ? (
-        <div key={`unique-${Date.now()}-${Math.floor(Math.random() * 1000)}`}>
-          <div id="content1">
-            <div className="bodyformstyle">
-              {data.filter((e) => e.id === id).map((e, i) => (
-                <div style={{ marginBottom: "5%" }} key={i}>
-                  <div className="containerform" ref={pdfRef}>
-                    <header className="formheaderstyle">
-                      <h1 className="h1form">
-                        {e.personalDetails.firstname} {e.personalDetails.lastname}
-                      </h1>
-                      <div className="contact-info">
-                        <p className="pform">
-                          <SiGmail /> &nbsp;
-                          {e.personalDetails.email}
-                        </p>
-                        <p className="pform">
-                          <FaPhoneAlt />&nbsp;
-                          {e.personalDetails.mobile}
-                        </p>
-                        <p className="pform">
-                          <IoLocation />&nbsp;
-                          {e.personalDetails.address},&nbsp;{e.personalDetails.city},&nbsp;
-                          {e.personalDetails.state},&nbsp;{e.personalDetails.zip}
-                        </p>
-                        <p className="pform">
-                          <FaLinkedinIn />&nbsp;
-                          {e.personalDetails.linkedin}, &nbsp;<FaGithub />&nbsp;{e.personalDetails.github},
-                        </p>
-                        <p className="pform">
-                          <CiLink /> &nbsp;{e.personalDetails.portfolio}
-                        </p>
-                      </div>
-                    </header>
-                    <section className="section">
-                      <h2 className="h2form">Objective</h2>
-                      <p className="pform">
-                      Motivated professional with a diverse skill set and a passion for [industry/field]. 
-                      Seeking opportunities to contribute expertise, drive results, and grow within a dynamic organization.
-                      </p>
-                    </section>
-                    <section className="section">
-                      <h2 className="h2form">Skills</h2>
-                      <ul className="uform">
-                        {e.skills.map((skill, index) => (
-                          <li className="liform" key={index}>
-                            <i className="fas fa-check icon"></i>
-                            {skill}
-                          </li>
-                        ))}
-                      </ul>
-                    </section>
-                    <section className="section">
-                      <h2 className="h2form">Education</h2>
-                      {e.qualifications.map((qualification, index) => (
-                        <div key={index}>
-                          <h3 className="h3form">{qualification.CourseDetails}</h3>
+      {loading ? ( 
+        <div style={{ textAlign: 'center', marginTop: '20px' }}>
+          <Spinner animation="border" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </Spinner>
+        </div>
+      ) : ( 
+        <>
+          {data.length > 0 || data2.length > 0 || data3.length > 0 ? (
+            <div key={`unique-${Date.now()}-${Math.floor(Math.random() * 1000)}`}>
+              <div id="content1">
+                {data.filter((e) => e.id === id).map((e, i) => (
+                  <div style={{ marginBottom: "5%" }} key={i}>
+                    <div className="containerform" ref={pdfRef}>
+                      <header className="formheaderstyle">
+                        <h1 className="h1form">
+                          {e.personalDetails.firstname} {e.personalDetails.lastname}
+                        </h1>
+                        <div className="contact-info">
                           <p className="pform">
-                            {qualification.InstituteName},{qualification.Location}
+                            <SiGmail /> &nbsp;
+                            {e.personalDetails.email}
                           </p>
-                          <p className="pform" style={{ marginBottom: "2%" }}>
-                            {qualification.StartYear}-{qualification.EndYear}
+                          <p className="pform">
+                            <FaPhoneAlt />&nbsp;
+                            {e.personalDetails.mobile}
+                          </p>
+                          <p className="pform">
+                            <IoLocation />&nbsp;
+                            {e.personalDetails.address},&nbsp;{e.personalDetails.city},&nbsp;
+                            {e.personalDetails.state},&nbsp;{e.personalDetails.zip}
+                          </p>
+                          <p className="pform">
+                            <FaLinkedinIn />&nbsp;
+                            {e.personalDetails.linkedin}, &nbsp;<FaGithub />&nbsp;{e.personalDetails.github},
+                          </p>
+                          <p className="pform">
+                            <CiLink /> &nbsp;{e.personalDetails.portfolio}
                           </p>
                         </div>
-                      ))}
-                    </section>
-                    {e.jobs.length > 0 ? (
+                      </header>
                       <section className="section">
-                        <h2 className="h2form">Experience</h2>
-                        {e.jobs.map((job, index) => (
+                        <h2 className="h2form">Objective</h2>
+                        <p className="pform">
+                          Motivated professional with a diverse skill set and a passion for [industry/field]. 
+                          Seeking opportunities to contribute expertise, drive results, and grow within a dynamic organization.
+                        </p>
+                      </section>
+                      <section className="section">
+                        <h2 className="h2form">Skills</h2>
+                        <ul className="uform">
+                          {e.skills.map((skill, index) => (
+                            <li className="liform" key={index}>
+                              <i className="fas fa-check icon"></i>
+                              {skill}
+                            </li>
+                          ))}
+                        </ul>
+                      </section>
+                      <section className="section">
+                        <h2 className="h2form">Education</h2>
+                        {e.qualifications.map((qualification, index) => (
                           <div key={index}>
-                            <h3 className="h3form">{job.Jobtitle}</h3>
-                            <p className="pform">{job.Employer},{job.Location}</p>
+                            <h3 className="h3form">{qualification.CourseDetails}</h3>
                             <p className="pform">
-                              {job.StartYear}-{job.EndYear}
+                              {qualification.InstituteName},{qualification.Location}
+                            </p>
+                            <p className="pform" style={{ marginBottom: "2%" }}>
+                              {qualification.StartYear}-{qualification.EndYear}
                             </p>
                           </div>
                         ))}
                       </section>
-                    ) : null}
-                    <footer className="footerform">
-                      <p className="pform">Feel free to contact me for any further information.</p>
-                    </footer>
+                      {e.jobs.length > 0 ? (
+                        <section className="section">
+                          <h2 className="h2form">Experience</h2>
+                          {e.jobs.map((job, index) => (
+                            <div key={index}>
+                              <h3 className="h3form">{job.Jobtitle}</h3>
+                              <p className="pform">{job.Employer},{job.Location}</p>
+                              <p className="pform">
+                                {job.StartYear}-{job.EndYear}
+                              </p>
+                            </div>
+                          ))}
+                        </section>
+                      ) : null}
+                      <footer className="footerform">
+                        <p className="pform">Feel free to contact me for any further information.</p>
+                      </footer>
+                    </div>
+                    <div style={{ display: "flex", justifyContent: "center", marginTop: "1%" }}>
+                      <Button onClick={() => generatePDF("content1",e)}>Generate PDF</Button>
+                      &nbsp;
+                      <button className="btn btn-primary" onClick={() => deleteresume(e)}>
+                        deleteresume
+                      </button>
+                    </div>
+                    <hr />
                   </div>
-                  <div style={{ display: "flex", justifyContent: "center", marginTop: "1%" }}>
-                    <Button onClick={() => generatePDF("content1",e)}>Generate PDF</Button>
-                    &nbsp;
-                    <button className="btn btn-primary" onClick={() => deleteresume(e)}>
-                      deleteresume
-                    </button>
-                  </div>
-                  <hr />
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* Resume 2 */}
+                ))}
+              </div>
+         
+            
+                 {/* Resume 2 */}
           <div>
             {data2.filter((e) => e.id === id).map((e, i) => (
               <div className="bodyformstyle" key={i}>
@@ -436,10 +384,10 @@ const generatePDF = async (elementId, e, i) => {
               </div>
             ))}
           </div>
-       
-         {/* Resu<div>me 3 */}
+
+           {/* Resu<div>me 3 */}
          {data3.filter((e)=>e.id === id).map((e,i)=>(
-           <div className="containerformbody">
+           <div className="containerformbody" key={i}>
            <div id="containerform">
            <div id="container3">
             <div id="header3">
@@ -514,25 +462,29 @@ const generatePDF = async (elementId, e, i) => {
          ))}
        
        </div>
-      ) : (
-        <>
-          <div
-            style={{
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              marginTop: "15%",
-            }}
-          >
-            <h1>Please create new Resume !!</h1>
-            <Button variant="primary" onClick={() => navigate(`/profile/${id}`)}>
-              Refresh
-            </Button>
-          </div>
+
+          ) : (
+            <>
+              <div
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  marginTop: "15%",
+                }}
+              >
+                <h1>Please create new Resume !!</h1>
+                <Button variant="primary" onClick={() => navigate(`/profile/${id}`)}>
+                  Refresh
+                </Button>
+              </div>
+            </>
+          )}
         </>
       )}
     </>
-  );
+  ); 
+ 
 }
 
 export default ViewResume;
