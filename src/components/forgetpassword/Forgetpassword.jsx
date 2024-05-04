@@ -21,6 +21,9 @@ const ForgetPassword = () => {
         })
         if(res.status==200){
             toast.success("Email sent successfully");
+             setTimeout(() => {
+                    window.location.href = "/dashboard";
+                  }, 1000);
         }
         else {
                 toast.error("Email not found");
