@@ -20,7 +20,7 @@ const ForgetPassword = () => {
             authenticate:ApiRoutes.FORGETPASSWORD.authenticate
         })
         if(res.status==200){
-            toast.success("Email sent successfully");
+            toast.success("Email sent successfully,Check Your Email..");
              setTimeout(() => {
                     window.location.href = "/dashboard";
                   }, 1000);
