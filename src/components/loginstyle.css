@@ -6,6 +6,11 @@
   border-radius: 8px;
   box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
   margin-top: 5%;
+  background-color: rgb(155, 206, 248);
+}
+
+#loginWrapper:hover{
+  box-shadow: 0px 4px 8px rgba(0, 8, 8, 8);
 }
 
 #loginHeader {
@@ -18,8 +23,8 @@
   margin-bottom: 10px;
 }
 
-#loginHeader p {
-  font-size: 14px;
+#loginHeaderp {
+  font-size: 16px;
 }
 
 #loginHeader p a {
@@ -63,7 +68,7 @@
 }
 
 #btnPrimary:hover {
-  background-color: #0056b3;
+  padding:12px;
 }
 
 #forgetstyle{
