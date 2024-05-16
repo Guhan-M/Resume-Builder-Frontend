@@ -1,5 +1,5 @@
-import React,{useEffect} from "react";
-import Button from 'react-bootstrap/Button';
+import React,{useEffect,useState} from "react";
+import { Button,Spinner} from 'react-bootstrap';
 import Form from 'react-bootstrap/Form';
 import {Link} from 'react-router-dom'
 import toast from 'react-hot-toast';
@@ -8,7 +8,8 @@ import ApiRoutes from "../utils/ApiRoutes";
 import { useNavigate } from "react-router-dom";
 import './signupstyle.css'
 function Signup(){
-const navigate = useNavigate()
+const navigate = useNavigate();
+const [loading, setLoading] = useState(true);
 
 useEffect(()=>{
     sessionStorage.clear()
@@ -18,6 +19,7 @@ useEffect(()=>{
 const handleSignup = async (e)=>{
     e.preventDefault()
     try{
+        setLoading(false);
         let formData= new FormData(e.target)
         let data= Object.fromEntries(formData) 
         console.log(data)
@@ -33,10 +35,12 @@ const handleSignup = async (e)=>{
         }
         else{
             toast.error("Input Name,Email and Password")
+            setLoading(true);
         }
     }
     catch(error){
         toast.error(error.response.data.message || error.message)
+        setLoading(true);
     }
 }
 
@@ -62,10 +66,20 @@ return <>
         <Form.Label id="formLabel">Password</Form.Label>
         <Form.Control id="formControl"  type="password" placeholder="Password" name='password'/>
       </Form.Group>
-      
-      <Button id="btnPrimary" variant="primary" type="submit">
-        Submit
-      </Button>
+    
+      {loading ? ( 
+       <>
+           <Button id="btnPrimary" variant="primary" type="submit">
+          Submit
+        </Button>
+       </>
+      ) : ( 
+        <div style={{ textAlign: 'center', marginTop: '20px' }}>
+          <Spinner animation="border" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </Spinner>
+        </div>
+      )}
     </Form>
   </div>
 </>
