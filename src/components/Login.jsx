@@ -40,10 +40,12 @@ const handleLogin = async (e)=>{
         }
         else{
             toast.error("Input Email and Password")
+            setLoading(true)
         }
     }
     catch(error){
         toast.error(error.response.data.message || error.message)
+        setLoading(true)
     }
 }
 
@@ -64,6 +66,7 @@ return <>
       <Form.Label id="formLabel">Password</Form.Label>
       <Form.Control id="formControl" type="password" placeholder="Password" name='password' />
     </Form.Group>
+    
     {loading ? ( 
        <>
            <Button id="btnPrimary" variant="primary" type="submit">
