@@ -4,7 +4,7 @@ import ApiRoutes from '../../utils/ApiRoutes';
 import toast from 'react-hot-toast';
 import useLogout from '../../hooks/useLogout';
 import { useNavigate } from 'react-router-dom';
-import { Button, Card } from 'react-bootstrap';
+import { Button, Card, Spinner} from 'react-bootstrap';
 import { HiArrowSmRight } from "react-icons/hi";
 import './Dashboardstyle.css'; // Import CSS file for styling
 
@@ -12,6 +12,7 @@ function Dashboard() {
   let [data, setData] = useState([]);
   let navigate = useNavigate();
   let logout = useLogout();
+  const [loading, setLoading] = useState(true);
 
   const getData = async () => {
     try {
@@ -20,6 +21,7 @@ function Dashboard() {
       });
       if (res.status === 200) {
         setData(res.data.users);
+        setLoading(false);
       }
     } catch (error) {
       toast.error(error.response.data.message || error.message);
@@ -55,8 +57,16 @@ function Dashboard() {
           </div>
         </header>
 
-        {/* Resume Templates */}
         <h2 style={{ textAlign: "center", marginBottom: "2rem", marginTop: "5rem" }}>Explore Our Resume Templates</h2>
+        {loading ? ( 
+        <div style={{ textAlign: 'center', marginTop: '20px' }}>
+          <Spinner animation="border" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </Spinner>
+        </div>
+      ) : ( 
+        <>
+        {/* Resume Templates */}
         <div className="template-container">
           {data.map((e, i) => (
             <div key={i} className="template-card">
@@ -71,7 +81,9 @@ function Dashboard() {
             </div>
           ))}
         </div>
-
+        </>
+      )
+          }
         {/* About section */}
         <section id="about">
           <div className="container px-4">
