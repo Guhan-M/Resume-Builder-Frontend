@@ -1,3 +1,4 @@
+import React,{useEffect,useState} from "react";
 import { useFormik } from "formik";
 import * as Yup from "yup";
 import AxiosService from "../../utils/AxiosService.jsx";
@@ -5,8 +6,12 @@ import ApiRoutes from "../../utils/ApiRoutes.jsx";
 import toast from 'react-hot-toast'
 import './forgetpassword.css'
 import {Link} from 'react-router-dom'
+import { Button, Spinner} from 'react-bootstrap';
+import { useNavigate } from "react-router-dom";
 
 const ForgetPassword = () => {
+  const navigate = useNavigate()
+  const [loading, setLoading] = useState(true);
   const formik = useFormik({
     initialValues: {
       email: "",
@@ -16,21 +21,22 @@ const ForgetPassword = () => {
     }),
     onSubmit: async (values) => {
     try{
+        setLoading(false);
         let res = await AxiosService.post(ApiRoutes.FORGETPASSWORD.path,values,{
             authenticate:ApiRoutes.FORGETPASSWORD.authenticate
         })
         if(res.status==200){
-            toast.success("Email sent successfully,Check Your Email..");
-             setTimeout(() => {
-                    window.location.href = "/dashboard";
-                  }, 1000);
+            toast.success("Email sent successfully, Kindly check Mail for update password");
+            navigate(`/login`)
         }
         else {
                 toast.error("Email not found");
+                setLoading(true)
               }
     }
     catch(error){
         toast.error(error.response.data.message || error.message)
+        setLoading(true)
     }
     },
   });
@@ -55,7 +61,17 @@ const ForgetPassword = () => {
       {formik.touched.email && formik.errors.email ? (
         <div>{formik.errors.email}</div>
       ) : null}
-      <button  id="btnPrimary" type="submit">Submit</button>
+ {loading ? ( 
+       <>
+          <Button  id="btnPrimary" type="submit">Submit </Button>
+       </>
+      ) : ( 
+        <div style={{ textAlign: 'center', marginTop: '20px' }}>
+          <Spinner animation="border" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </Spinner>
+        </div>
+      )}
     </form>
     </div>
   );
