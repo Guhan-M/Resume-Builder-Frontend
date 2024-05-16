@@ -1,5 +1,5 @@
-import React,{useEffect} from "react";
-import Button from 'react-bootstrap/Button';
+import React,{useEffect,useState} from "react";
+import { Button,Spinner} from 'react-bootstrap';
 import Form from 'react-bootstrap/Form';
 import {Link} from 'react-router-dom'
 import toast from 'react-hot-toast';
@@ -9,6 +9,7 @@ import { useNavigate } from "react-router-dom";
 import "./loginstyle.css"
 function Login(){
 const navigate = useNavigate()
+const [loading, setLoading] = useState(true);
 
 useEffect(()=>{
     sessionStorage.clear()
@@ -17,6 +18,7 @@ useEffect(()=>{
 const handleLogin = async (e)=>{
     e.preventDefault()
     try{
+        setLoading(false);
         let formData= new FormData(e.target)
         let data= Object.fromEntries(formData)
         console.log(data)
@@ -46,10 +48,11 @@ const handleLogin = async (e)=>{
 }
 
 return <>
+
 <div id='loginWrapper'>
   <div id='loginHeader'>
     <h2>Login Here</h2>
-    <p>New here? Don't worry <Link to='/signup'>Sign Up here</Link></p>
+    <p  id='loginHeaderp'>New here? Don't worry <Link to='/signup'>Sign Up here</Link></p>
   </div>
   <Form onSubmit={handleLogin}>
     <Form.Group id="formGroup" className="mb-3">
@@ -61,14 +64,22 @@ return <>
       <Form.Label id="formLabel">Password</Form.Label>
       <Form.Control id="formControl" type="password" placeholder="Password" name='password' />
     </Form.Group>
-
-    <Button id="btnPrimary" variant="primary" type="submit">
-      Submit
-    </Button>
+    {loading ? ( 
+       <>
+           <Button id="btnPrimary" variant="primary" type="submit">
+          Submit
+        </Button>
+       </>
+      ) : ( 
+        <div style={{ textAlign: 'center', marginTop: '20px' }}>
+          <Spinner animation="border" role="status">
+            <span className="visually-hidden">Loading...</span>
+          </Spinner>
+        </div>
+      )}
      <Link id='forgetstyle' to='/forgetpassword'>Forget Password</Link>
   </Form>
 </div>
-
 </>
 
 }
